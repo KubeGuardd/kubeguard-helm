@@ -1,17 +1,13 @@
 replicaCount: 2
-
 image:
   repository: kubeguardacr.azurecr.io/kubeguard-gateway
   pullPolicy: Always
-  tag: "latest"
-
+  tag: "369df62d1ad4"
 namespace: kubeguard-dev
-
 service:
   type: ClusterIP
   port: 3000
   targetPort: 3000
-
 resources:
   requests:
     cpu: 100m
@@ -19,7 +15,6 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
 env:
   NODE_ENV: production
   GATEWAY_PORT: "3000"
@@ -30,11 +25,9 @@ env:
   WATCHER_SERVICE_URL: http://watcher-service:3002
   ANALYSIS_SERVICE_URL: http://analysis-service:3003
   NOTIFICATION_SERVICE_URL: http://notification-service:3004
-
 serviceAccount:
   name: kubeguard-gateway-sa
   clientId: ""
-
 keyVault:
   name: kubeguard-kv
   secrets:
@@ -44,7 +37,6 @@ keyVault:
       secretName: azure-client-id
     - envName: INTERNAL_SECRET
       secretName: internal-secret
-
 probes:
   liveness:
     path: /health
