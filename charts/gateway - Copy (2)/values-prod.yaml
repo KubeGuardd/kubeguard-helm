@@ -1,0 +1,58 @@
+replicaCount: 3
+
+image:
+  repository: kubeguardacr.azurecr.io/kubeguard-gateway
+  pullPolicy: Always
+  tag: "latest"
+
+namespace: kubeguard-prod
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  NODE_ENV: production
+  GATEWAY_PORT: "3000"
+  LOG_LEVEL: info
+  SERVICE_NAME: gateway
+  FRONTEND_URL: https://kubeguard.hmsclinic.online
+  PROJECT_SERVICE_URL: http://project-service:3001
+  WATCHER_SERVICE_URL: http://watcher-service:3002
+  ANALYSIS_SERVICE_URL: http://analysis-service:3003
+  NOTIFICATION_SERVICE_URL: http://notification-service:3004
+
+serviceAccount:
+  name: kubeguard-gateway-sa
+  clientId: ""
+
+keyVault:
+  name: kubeguard-kv
+  secrets:
+    - envName: AZURE_TENANT_ID
+      secretName: azure-tenant-id
+    - envName: AZURE_CLIENT_ID
+      secretName: azure-client-id
+    - envName: INTERNAL_SECRET
+      secretName: internal-secret
+
+probes:
+  liveness:
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+  readiness:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
