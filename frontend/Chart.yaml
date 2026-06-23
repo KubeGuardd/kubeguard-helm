@@ -1,0 +1,6 @@
+apiVersion: v2
+name: notification-service
+description: Helm chart for KubeGuard Notification Service — Service Bus consumer, email dispatch, admin approval handler
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
