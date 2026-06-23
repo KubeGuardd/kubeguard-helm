@@ -5,23 +5,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: notification-service
+  name: frontend
   namespace: {{ .Values.namespace }}
   labels:
-    app: notification-service
-    app.kubernetes.io/name: notification-service
+    app: frontend
+    app.kubernetes.io/name: frontend
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: notification-service
+      app: frontend
   strategy:
     blueGreen:
       # Active service receives live production traffic
-      activeService: notification-service-active
+      activeService: frontend-active
       # Preview service receives the new version before promotion
-      previewService: notification-service-preview
+      previewService: frontend-preview
       previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
       # dev: auto-promotes immediately; prod: requires manual kubectl argo rollouts promote
       autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
@@ -29,24 +29,27 @@ spec:
   template:
     metadata:
       labels:
-        app: notification-service
+        app: frontend
         # Required label for Azure AD Workload Identity token injection
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: notification-service
+        - name: frontend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-          # No env, configmap, or secrets defined here.
-          # All secrets (SERVICE_BUS_CONNECTION_STRING, NOTIFICATION_SECRET, SENDGRID_API_KEY,
-          # MONGODB_URI, INTERNAL_SECRET, FRONTEND_URL, EMAIL_FROM) are sourced from
-          # Azure Key Vault via CSI driver.
-          # Mount the CSI volume below once Key Vault integration is enabled in AKS.
+          # No env or secrets at runtime — VITE_* variables are baked into the static
+          # bundle at Docker image build time via ARG/ENV in the Dockerfile.
+          # Pass them in your CI pipeline as build args:
+          #   --build-arg VITE_AZURE_CLIENT_ID=...
+          #   --build-arg VITE_AZURE_TENANT_ID=...
+          #   --build-arg VITE_AZURE_REDIRECT_URI=...
+          #   --build-arg VITE_API_BASE_URL=...
+          # No Key Vault CSI mount needed for the frontend.
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
@@ -68,11 +71,3 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu | quote }}
               memory: {{ .Values.resources.limits.memory | quote }}
-      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for notification-service:
-      # volumes:
-      #   - name: secrets-store
-      #     csi:
-      #       driver: secrets-store.csi.k8s.io
-      #       readOnly: true
-      #       volumeAttributes:
-      #         secretProviderClass: notification-service-keyvault

@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: notification-service-prod
+  name: frontend-prod
   namespace: argocd
   labels:
-    app: notification-service
+    app: frontend
     environment: prod
 spec:
   project: default
   source:
     repoURL: https://github.com/KubeGuardd/kubeguard-helm
     targetRevision: main
-    path: notification-service
+    path: frontend
     helm:
       valueFiles:
         - values-prod.yaml
