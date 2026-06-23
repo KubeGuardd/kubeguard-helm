@@ -5,23 +5,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: analysis-service
+  name: notification-service
   namespace: {{ .Values.namespace }}
   labels:
-    app: analysis-service
-    app.kubernetes.io/name: analysis-service
+    app: notification-service
+    app.kubernetes.io/name: notification-service
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: analysis-service
+      app: notification-service
   strategy:
     blueGreen:
       # Active service receives live production traffic
-      activeService: analysis-service-active
+      activeService: notification-service-active
       # Preview service receives the new version before promotion
-      previewService: analysis-service-preview
+      previewService: notification-service-preview
       previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
       # dev: auto-promotes immediately; prod: requires manual kubectl argo rollouts promote
       autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
@@ -29,13 +29,13 @@ spec:
   template:
     metadata:
       labels:
-        app: analysis-service
+        app: notification-service
         # Required label for Azure AD Workload Identity token injection
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: analysis-service
+        - name: notification-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -43,8 +43,9 @@ spec:
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           # No env, configmap, or secrets defined here.
-          # All secrets (AI_API_KEY, AZURE_STORAGE_CONNECTION_STRING, SERVICE_BUS_CONNECTION_STRING,
-          # MONGODB_URI, INTERNAL_SECRET) are sourced from Azure Key Vault via CSI driver.
+          # All secrets (SERVICE_BUS_CONNECTION_STRING, NOTIFICATION_SECRET, SENDGRID_API_KEY,
+          # MONGODB_URI, INTERNAL_SECRET, FRONTEND_URL, EMAIL_FROM) are sourced from
+          # Azure Key Vault via CSI driver.
           # Mount the CSI volume below once Key Vault integration is enabled in AKS.
           livenessProbe:
             httpGet:
@@ -67,11 +68,11 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu | quote }}
               memory: {{ .Values.resources.limits.memory | quote }}
-      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for analysis-service:
+      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for notification-service:
       # volumes:
       #   - name: secrets-store
       #     csi:
       #       driver: secrets-store.csi.k8s.io
       #       readOnly: true
       #       volumeAttributes:
-      #         secretProviderClass: analysis-service-keyvault
+      #         secretProviderClass: notification-service-keyvault

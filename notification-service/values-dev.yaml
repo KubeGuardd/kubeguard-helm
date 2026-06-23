@@ -1,18 +1,24 @@
 namespace: kubeguard-dev
+
 replicaCount: 1
+
 image:
-  repository: kubeguardacr.azurecr.io/analysis-service
-  tag: "77c7bf910cc5"
+  repository: kubeguardacr.azurecr.io/notification-service
+  tag: "latest"
   pullPolicy: Always
+
 service:
-  port: 3003
-  targetPort: 3003
+  port: 3004
+  targetPort: 3004
+
 serviceAccount:
-  name: analysis-service-sa
-  azureClientId: "00000000-0000-0000-0000-000000000000" # Replace with Managed Identity Client ID for dev
+  name: notification-service-sa
+  azureClientId: "00000000-0000-0000-0000-000000000000"  # Replace with Managed Identity Client ID for dev
+
 rollout:
   autoPromotionEnabled: true
   previewReplicaCount: 1
+
 resources:
   requests:
     cpu: "100m"
@@ -20,11 +26,13 @@ resources:
   limits:
     cpu: "500m"
     memory: "512Mi"
+
 livenessProbe:
   path: /healthz
   initialDelaySeconds: 15
   periodSeconds: 20
   failureThreshold: 3
+
 readinessProbe:
   path: /ready
   initialDelaySeconds: 10

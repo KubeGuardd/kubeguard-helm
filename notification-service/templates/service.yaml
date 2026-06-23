@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: analysis-service-active
+  name: notification-service-active
   namespace: {{ .Values.namespace }}
   labels:
-    app: analysis-service
+    app: notification-service
     role: active
-    app.kubernetes.io/name: analysis-service
+    app.kubernetes.io/name: notification-service
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   type: ClusterIP
   selector:
-    app: analysis-service
+    app: notification-service
     rollouts-pod-template-hash: active
   ports:
     - name: http
@@ -22,17 +22,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: analysis-service-preview
+  name: notification-service-preview
   namespace: {{ .Values.namespace }}
   labels:
-    app: analysis-service
+    app: notification-service
     role: preview
-    app.kubernetes.io/name: analysis-service
+    app.kubernetes.io/name: notification-service
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   type: ClusterIP
   selector:
-    app: analysis-service
+    app: notification-service
     rollouts-pod-template-hash: preview
   ports:
     - name: http
