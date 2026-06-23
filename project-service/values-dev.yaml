@@ -1,0 +1,43 @@
+replicaCount: 1
+
+image:
+  repository: acrregistrydemo1.azurecr.io/project-service
+  pullPolicy: Always
+  tag: "latest"
+
+namespace: kubeguard-dev
+
+service:
+  type: ClusterIP
+  port: 3001
+  targetPort: 3001
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+serviceAccount:
+  name: project-service-sa
+  azureClientId: "00000000-0000-0000-0000-000000000000"
+
+rollout:
+  autoPromotionEnabled: true
+  previewReplicaCount: 1
+
+probes:
+  liveness:
+    path: /healthz
+    port: 3001
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+  readiness:
+    path: /ready
+    port: 3001
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
