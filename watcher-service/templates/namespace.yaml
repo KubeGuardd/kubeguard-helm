@@ -3,5 +3,6 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/managed-by: helm
-    app: project-service
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    environment: {{ .Values.namespace }}

@@ -1,35 +1,41 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: project-service-active
+  name: watcher-service-active
   namespace: {{ .Values.namespace }}
   labels:
-    app: project-service
-    app.kubernetes.io/managed-by: helm
+    app: watcher-service
+    role: active
+    app.kubernetes.io/name: watcher-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
   selector:
-    app: project-service
+    app: watcher-service
     rollouts-pod-template-hash: active
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: project-service-preview
+  name: watcher-service-preview
   namespace: {{ .Values.namespace }}
   labels:
-    app: project-service
-    app.kubernetes.io/managed-by: helm
+    app: watcher-service
+    role: preview
+    app.kubernetes.io/name: watcher-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
   selector:
-    app: project-service
+    app: watcher-service
     rollouts-pod-template-hash: preview
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}

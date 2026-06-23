@@ -1,55 +1,76 @@
+# NOTE: This file uses kind: Rollout (Argo Rollouts CRD), not a standard Kubernetes Deployment.
+# Filename is deployment.yaml to match project folder convention.
+# Argo Rollouts must be installed in the cluster before applying:
+#   kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: project-service
+  name: watcher-service
   namespace: {{ .Values.namespace }}
   labels:
-    app: project-service
-    app.kubernetes.io/managed-by: helm
+    app: watcher-service
+    app.kubernetes.io/name: watcher-service
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: project-service
+      app: watcher-service
+  strategy:
+    blueGreen:
+      # Active service receives live production traffic
+      activeService: watcher-service-active
+      # Preview service receives the new version before promotion
+      previewService: watcher-service-preview
+      previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
+      # dev: auto-promotes immediately; prod: requires manual kubectl argo rollouts promote
+      autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
+      scaleDownDelaySeconds: 30
   template:
     metadata:
       labels:
-        app: project-service
+        app: watcher-service
+        # Required label for Azure AD Workload Identity token injection
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: project-service
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        - name: watcher-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-          resources:
-            requests:
-              cpu: {{ .Values.resources.requests.cpu }}
-              memory: {{ .Values.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.resources.limits.cpu }}
-              memory: {{ .Values.resources.limits.memory }}
+          # No env, configmap, or secrets defined here.
+          # All secrets are sourced from Azure Key Vault via CSI driver (SecretProviderClass).
+          # Mount the CSI volume below once Key Vault integration is enabled in AKS.
           livenessProbe:
             httpGet:
-              path: {{ .Values.probes.liveness.path }}
-              port: {{ .Values.probes.liveness.port }}
-            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
-            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+              path: {{ .Values.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.probes.readiness.path }}
-              port: {{ .Values.probes.readiness.port }}
-            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
-            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
-      terminationGracePeriodSeconds: 30
-  strategy:
-    blueGreen:
-      activeService: project-service-active
-      previewService: project-service-preview
-      autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
-      previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
+              path: {{ .Values.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              memory: {{ .Values.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              memory: {{ .Values.resources.limits.memory | quote }}
+      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for watcher-service:
+      # volumes:
+      #   - name: secrets-store
+      #     csi:
+      #       driver: secrets-store.csi.k8s.io
+      #       readOnly: true
+      #       volumeAttributes:
+      #         secretProviderClass: watcher-service-keyvault
