@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: analysis-service-prod
+  namespace: argocd
+  labels:
+    app: analysis-service
+    environment: prod
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/KubeGuardd/kubeguard-helm
+    targetRevision: main
+    path: analysis-service
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeguard-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

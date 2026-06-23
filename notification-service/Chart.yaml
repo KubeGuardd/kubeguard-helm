@@ -1,0 +1,6 @@
+apiVersion: v2
+name: analysis-service
+description: Helm chart for KubeGuard Analysis Service — Prometheus queries, AI report generation, Blob Storage save, Service Bus publish
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
