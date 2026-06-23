@@ -3,5 +3,5 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/managed-by: helm
-    environment: {{ .Values.env.NODE_ENV }}
+    environment: {{ .Values.namespace }}
+    managed-by: argocd

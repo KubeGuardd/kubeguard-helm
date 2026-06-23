@@ -1,13 +1,22 @@
-replicaCount: 3
-image:
-  repository: kubeguardacr.azurecr.io/kubeguard-gateway
-  pullPolicy: Always
-  tag: "v1.1.0"
 namespace: kubeguard-prod
+
+replicaCount: 2
+
+image:
+  repository: kubeguardacr.azurecr.io/gateway
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+containerPort: 3000
+
 service:
   type: ClusterIP
   port: 3000
-  targetPort: 3000
+
+serviceAccount:
+  name: gateway-sa
+  azureClientId: "00000000-0000-0000-0000-000000000000"
+
 resources:
   requests:
     cpu: 100m
@@ -15,36 +24,21 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-env:
-  NODE_ENV: production
-  GATEWAY_PORT: "3000"
-  LOG_LEVEL: info
-  SERVICE_NAME: gateway
-  FRONTEND_URL: https://kubeguard.hmsclinic.online
-  PROJECT_SERVICE_URL: http://project-service:3001
-  WATCHER_SERVICE_URL: http://watcher-service:3002
-  ANALYSIS_SERVICE_URL: http://analysis-service:3003
-  NOTIFICATION_SERVICE_URL: http://notification-service:3004
-serviceAccount:
-  name: kubeguard-gateway-sa
-  clientId: ""
-keyVault:
-  name: kubeguard-kv
-  secrets:
-    - envName: AZURE_TENANT_ID
-      secretName: azure-tenant-id
-    - envName: AZURE_CLIENT_ID
-      secretName: azure-client-id
-    - envName: INTERNAL_SECRET
-      secretName: internal-secret
+
 probes:
   liveness:
-    path: /health
-    initialDelaySeconds: 15
-    periodSeconds: 20
-    failureThreshold: 3
-  readiness:
-    path: /health
+    path: /healthz
     initialDelaySeconds: 10
     periodSeconds: 10
+    timeoutSeconds: 3
     failureThreshold: 3
+  readiness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+rollout:
+  autoPromotionEnabled: false
+  scaleDownDelaySeconds: 300
