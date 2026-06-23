@@ -1,0 +1,6 @@
+apiVersion: v2
+name: watcher-service
+description: Helm chart for KubeGuard Watcher Service — GitHub webhook receiver, YAML diff detection, ArgoCD pause trigger
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

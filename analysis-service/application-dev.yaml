@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: watcher-service-dev
+  namespace: argocd
+  labels:
+    app: watcher-service
+    environment: dev
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/KubeGuardd/kubeguard-helm
+    targetRevision: dev
+    path: watcher-service
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeguard-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
