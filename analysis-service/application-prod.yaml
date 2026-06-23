@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: watcher-service-prod
+  name: analysis-service-prod
   namespace: argocd
   labels:
-    app: watcher-service
+    app: analysis-service
     environment: prod
 spec:
   project: default
   source:
     repoURL: https://github.com/KubeGuardd/kubeguard-helm
     targetRevision: main
-    path: watcher-service
+    path: analysis-service
     helm:
       valueFiles:
         - values-prod.yaml

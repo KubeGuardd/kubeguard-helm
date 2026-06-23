@@ -5,23 +5,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: watcher-service
+  name: analysis-service
   namespace: {{ .Values.namespace }}
   labels:
-    app: watcher-service
-    app.kubernetes.io/name: watcher-service
+    app: analysis-service
+    app.kubernetes.io/name: analysis-service
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: watcher-service
+      app: analysis-service
   strategy:
     blueGreen:
       # Active service receives live production traffic
-      activeService: watcher-service-active
+      activeService: analysis-service-active
       # Preview service receives the new version before promotion
-      previewService: watcher-service-preview
+      previewService: analysis-service-preview
       previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
       # dev: auto-promotes immediately; prod: requires manual kubectl argo rollouts promote
       autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
@@ -29,13 +29,13 @@ spec:
   template:
     metadata:
       labels:
-        app: watcher-service
+        app: analysis-service
         # Required label for Azure AD Workload Identity token injection
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: watcher-service
+        - name: analysis-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -43,7 +43,8 @@ spec:
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           # No env, configmap, or secrets defined here.
-          # All secrets are sourced from Azure Key Vault via CSI driver (SecretProviderClass).
+          # All secrets (AI_API_KEY, AZURE_STORAGE_CONNECTION_STRING, SERVICE_BUS_CONNECTION_STRING,
+          # MONGODB_URI, INTERNAL_SECRET) are sourced from Azure Key Vault via CSI driver.
           # Mount the CSI volume below once Key Vault integration is enabled in AKS.
           livenessProbe:
             httpGet:
@@ -66,11 +67,11 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu | quote }}
               memory: {{ .Values.resources.limits.memory | quote }}
-      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for watcher-service:
+      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for analysis-service:
       # volumes:
       #   - name: secrets-store
       #     csi:
       #       driver: secrets-store.csi.k8s.io
       #       readOnly: true
       #       volumeAttributes:
-      #         secretProviderClass: watcher-service-keyvault
+      #         secretProviderClass: analysis-service-keyvault
