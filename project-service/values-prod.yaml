@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   repository: acrregistrydemo1.azurecr.io/project-service
   pullPolicy: Always
-  tag: "v1.1.0"
+  tag: "v2.1.0"
 namespace: kubeguard-prod
 service:
   type: ClusterIP
