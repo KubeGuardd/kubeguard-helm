@@ -1,7 +1,7 @@
 namespace: kubeguard-dev
 replicaCount: 1
 image:
-  repository: kubeguardacr.azurecr.io/watcher-service
+  repository: kubeguardcr.azurecr.io/watcher-service
   tag: "a3b4dc7e8733"
   pullPolicy: Always
 service:

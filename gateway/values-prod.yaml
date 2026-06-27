@@ -1,7 +1,7 @@
 namespace: kubeguard-prod
 replicaCount: 2
 image:
-  repository: acrregistrydemo1.azurecr.io/gateway
+  repository: kubeguardcr.azurecr.io/gateway
   tag: "v1.1.0"
   pullPolicy: IfNotPresent
 containerPort: 3000

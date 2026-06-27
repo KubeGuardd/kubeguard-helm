@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: acrregistrydemo1.azurecr.io/project-service
+  repository: kubeguardcr.azurecr.io/project-service
   pullPolicy: Always
   tag: "46b1bce4f32b"
 namespace: kubeguard-dev

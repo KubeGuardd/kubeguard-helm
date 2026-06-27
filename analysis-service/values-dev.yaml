@@ -1,7 +1,7 @@
 namespace: kubeguard-dev
 replicaCount: 1
 image:
-  repository: kubeguardacr.azurecr.io/analysis-service
+  repository: kubeguardcr.azurecr.io/analysis-service
   tag: "a191a621f2b8"
   pullPolicy: Always
 service:

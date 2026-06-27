@@ -1,7 +1,7 @@
 namespace: kubeguard-prod
 replicaCount: 2
 image:
-  repository: kubeguardacr.azurecr.io/notification-service
+  repository: kubeguardcr.azurecr.io/notification-service
   tag: "v1.1.0"
   pullPolicy: Always
 service:
