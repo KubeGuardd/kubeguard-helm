@@ -2,7 +2,7 @@ namespace: kubeguard-dev
 replicaCount: 1
 image:
   repository: kubeguardacr.azurecr.io/frontend
-  tag: "807e36a6265a"
+  tag: "10765a8f836a"
   pullPolicy: Always
 service:
   port: 80
