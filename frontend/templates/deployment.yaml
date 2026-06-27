@@ -30,10 +30,7 @@ spec:
     metadata:
       labels:
         app: frontend
-        # Required label for Azure AD Workload Identity token injection
-        azure.workload.identity/use: "true"
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: frontend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

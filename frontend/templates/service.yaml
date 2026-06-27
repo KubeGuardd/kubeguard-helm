@@ -12,7 +12,6 @@ spec:
   type: ClusterIP
   selector:
     app: frontend
-    rollouts-pod-template-hash: active
   ports:
     - name: http
       protocol: TCP
@@ -33,9 +32,23 @@ spec:
   type: ClusterIP
   selector:
     app: frontend
-    rollouts-pod-template-hash: preview
   ports:
     - name: http
       protocol: TCP
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
+---
+# frontend/templates/service-lb.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-lb
+  namespace: {{ .Values.namespace }}
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
