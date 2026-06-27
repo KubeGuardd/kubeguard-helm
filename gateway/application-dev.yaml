@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/KubeGuardd/kubeguard-helm.git
-    targetRevision: dev
+    targetRevision: main
     path: gateway
     helm:
       valueFiles:

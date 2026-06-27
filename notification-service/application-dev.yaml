@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/KubeGuardd/kubeguard-helm
-    targetRevision: dev
+    targetRevision: main
     path: notification-service
     helm:
       valueFiles:
