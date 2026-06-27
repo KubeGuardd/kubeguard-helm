@@ -2,7 +2,7 @@ namespace: kubeguard-dev
 replicaCount: 1
 image:
   repository: acrregistrydemo1.azurecr.io/gateway
-  tag: "d7fee6e2d802"
+  tag: "d5efbf5dee99"
   pullPolicy: IfNotPresent
 containerPort: 3000
 service:
