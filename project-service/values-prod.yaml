@@ -1,6 +1,6 @@
 replicaCount: 2
 image:
-  repository: kubeguardcr.azurecr.io/project-service
+  repository: kubeguardprodcr.azurecr.io/project-service
   pullPolicy: Always
   tag: "v1.1.0"
 namespace: kubeguard-prod
