@@ -2,7 +2,7 @@ namespace: kubeguard-dev
 replicaCount: 1
 image:
   repository: kubeguardprodcr.azurecr.io/watcher-service
-  tag: "e0d4ca4fa969"
+  tag: "db8ef3e3c79f"
   pullPolicy: Always
 service:
   port: 3002
