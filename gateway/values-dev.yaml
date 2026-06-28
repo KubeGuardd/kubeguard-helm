@@ -10,13 +10,13 @@ service:
   port: 3000
 serviceAccount:
   name: gateway-sa
-  azureClientId: "7d6479f5-17ac-4f10-b320-307df612c987"
+  azureClientId: "9435c20e-eaed-4e98-98ea-3512aa93d244"
 keyVault:
-  name: "keyvaultdemo0912"
-  tenantId: "01ed7ca4-f203-43a5-956a-08329f95a438"
+  name: "kubeguard-prod-kv"
+  tenantId: "d8537334-bc24-4daf-95a8-bf4c9fb14394"
 keyVault:
-  name: keyvaultdemo0912
-  tenantId: "01ed7ca4-f203-43a5-956a-08329f95a438"
+  name: kubeguard-prod-kv
+  tenantId: "d8537334-bc24-4daf-95a8-bf4c9fb14394"
   secretPrefix: DEV-GATEWAY
 resources:
   requests:

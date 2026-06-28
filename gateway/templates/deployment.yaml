@@ -17,6 +17,13 @@ spec:
         app: gateway
         azure.workload.identity/use: "true"
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: gateway
+              topologyKey: kubernetes.io/hostname
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: gateway

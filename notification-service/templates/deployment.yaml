@@ -25,6 +25,13 @@ spec:
         app: notification-service
         azure.workload.identity/use: "true"
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: notification-service
+              topologyKey: kubernetes.io/hostname
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: notification-service

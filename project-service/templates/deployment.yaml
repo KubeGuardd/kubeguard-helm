@@ -17,6 +17,13 @@ spec:
         app: project-service
         azure.workload.identity/use: "true"
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: project-service
+              topologyKey: kubernetes.io/hostname
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: project-service
