@@ -2,7 +2,7 @@ namespace: kubeguard-dev
 replicaCount: 1
 image:
   repository: kubeguardcr.azurecr.io/analysis-service
-  tag: "a191a621f2b8"
+  tag: "db099ba03083"
   pullPolicy: Always
 service:
   port: 3003
