@@ -12,7 +12,6 @@ spec:
   type: ClusterIP
   selector:
     app: watcher-service
-    rollouts-pod-template-hash: active
   ports:
     - name: http
       protocol: TCP
@@ -33,7 +32,24 @@ spec:
   type: ClusterIP
   selector:
     app: watcher-service
-    rollouts-pod-template-hash: preview
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watcher-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: watcher-service
+spec:
+  type: ClusterIP
+  selector:
+    app: watcher-service
   ports:
     - name: http
       protocol: TCP
