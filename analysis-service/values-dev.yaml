@@ -9,7 +9,7 @@ service:
   targetPort: 3003
 serviceAccount:
   name: analysis-service-sa
-  azureClientId: "00000000-0000-0000-0000-000000000000" # Replace with Managed Identity Client ID for dev
+  azureClientId: "7d6479f5-17ac-4f10-b320-307df612c987" # Replace with Managed Identity Client ID for dev
 rollout:
   autoPromotionEnabled: true
   previewReplicaCount: 1

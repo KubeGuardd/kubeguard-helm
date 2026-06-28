@@ -10,7 +10,14 @@ service:
   port: 3000
 serviceAccount:
   name: gateway-sa
-  azureClientId: "00000000-0000-0000-0000-000000000000"
+  azureClientId: "7d6479f5-17ac-4f10-b320-307df612c987"
+keyVault:
+  name: "keyvaultdemo0912"
+  tenantId: "01ed7ca4-f203-43a5-956a-08329f95a438"
+keyVault:
+  name: keyvaultdemo0912
+  tenantId: "01ed7ca4-f203-43a5-956a-08329f95a438"
+  secretPrefix: DEV-GATEWAY
 resources:
   requests:
     cpu: 100m

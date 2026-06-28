@@ -7,9 +7,6 @@ image:
 service:
   port: 80
   targetPort: 80
-serviceAccount:
-  name: frontend-sa
-  azureClientId: "00000000-0000-0000-0000-000000000000" # Replace with Managed Identity Client ID for prod
 rollout:
   autoPromotionEnabled: false
   previewReplicaCount: 1
