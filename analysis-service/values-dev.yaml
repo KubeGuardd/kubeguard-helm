@@ -9,7 +9,11 @@ service:
   targetPort: 3003
 serviceAccount:
   name: analysis-service-sa
-  azureClientId: "7d6479f5-17ac-4f10-b320-307df612c987" # Replace with Managed Identity Client ID for dev
+  azureClientId: "7d6479f5-17ac-4f10-b320-307df612c987" 
+keyVault:
+  name: keyvaultdemo0912
+  tenantId: "01ed7ca4-f203-43a5-956a-08329f95a438"
+  secretPrefix: DEV-ANALYSIS
 rollout:
   autoPromotionEnabled: true
   previewReplicaCount: 1
