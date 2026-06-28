@@ -2,7 +2,7 @@ namespace: kubeguard-dev
 replicaCount: 1
 image:
   repository: kubeguardcr.azurecr.io/notification-service
-  tag: "d4dc1f5c009c"
+  tag: "12badabd9b14"
   pullPolicy: Always
 service:
   port: 3004
