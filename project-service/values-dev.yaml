@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: kubeguardcr.azurecr.io/project-service
   pullPolicy: Always
-  tag: "938a2fa58151"
+  tag: "f103c8b69796"
 namespace: kubeguard-dev
 service:
   type: ClusterIP
