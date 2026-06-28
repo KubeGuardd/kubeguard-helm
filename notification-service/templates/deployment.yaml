@@ -1,7 +1,3 @@
-# NOTE: This file uses kind: Rollout (Argo Rollouts CRD), not a standard Kubernetes Deployment.
-# Filename is deployment.yaml to match project folder convention.
-# Argo Rollouts must be installed in the cluster before applying:
-#   kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -18,19 +14,15 @@ spec:
       app: notification-service
   strategy:
     blueGreen:
-      # Active service receives live production traffic
       activeService: notification-service-active
-      # Preview service receives the new version before promotion
       previewService: notification-service-preview
       previewReplicaCount: {{ .Values.rollout.previewReplicaCount }}
-      # dev: auto-promotes immediately; prod: requires manual kubectl argo rollouts promote
       autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
       scaleDownDelaySeconds: 30
   template:
     metadata:
       labels:
         app: notification-service
-        # Required label for Azure AD Workload Identity token injection
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
@@ -42,11 +34,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
-          # No env, configmap, or secrets defined here.
-          # All secrets (SERVICE_BUS_CONNECTION_STRING, NOTIFICATION_SECRET, SENDGRID_API_KEY,
-          # MONGODB_URI, INTERNAL_SECRET, FRONTEND_URL, EMAIL_FROM) are sourced from
-          # Azure Key Vault via CSI driver.
-          # Mount the CSI volume below once Key Vault integration is enabled in AKS.
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
@@ -68,11 +55,3 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu | quote }}
               memory: {{ .Values.resources.limits.memory | quote }}
-      # Uncomment and configure once Key Vault CSI SecretProviderClass is created for notification-service:
-      # volumes:
-      #   - name: secrets-store
-      #     csi:
-      #       driver: secrets-store.csi.k8s.io
-      #       readOnly: true
-      #       volumeAttributes:
-      #         secretProviderClass: notification-service-keyvault

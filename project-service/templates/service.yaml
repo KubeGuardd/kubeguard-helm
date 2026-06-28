@@ -10,7 +10,6 @@ spec:
   type: {{ .Values.service.type }}
   selector:
     app: project-service
-    rollouts-pod-template-hash: active
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
@@ -28,7 +27,23 @@ spec:
   type: {{ .Values.service.type }}
   selector:
     app: project-service
-    rollouts-pod-template-hash: preview
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: project-service
+spec:
+  type: ClusterIP
+  selector:
+    app: project-service
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
