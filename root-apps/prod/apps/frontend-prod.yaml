@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-prod
+  namespace: argocd
+  labels:
+    app: frontend
+    environment: prod
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/KubeGuardd/kubeguard-helm
+    targetRevision: main
+    path: frontend
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubeguard-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
