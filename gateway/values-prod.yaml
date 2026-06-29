@@ -2,7 +2,7 @@ namespace: kubeguard-prod
 replicaCount: 2
 image:
   repository: kubeguardprodcr.azurecr.io/gateway
-  tag: "v2"
+  tag: "v1.1.0"
   pullPolicy: IfNotPresent
 containerPort: 3000
 service:
