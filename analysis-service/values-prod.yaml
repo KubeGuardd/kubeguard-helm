@@ -1,21 +1,28 @@
 namespace: kubeguard-prod
 replicaCount: 2
+
 image:
   repository: kubeguardprodcr.azurecr.io/analysis-service
   tag: "v1.1.0"
   pullPolicy: Always
+
 service:
   port: 3003
   targetPort: 3003
+
 serviceAccount:
   name: analysis-service-sa
   azureClientId: "9435c20e-eaed-4e98-98ea-3512aa93d244"
+
 keyVault:
   name: kubeguard-prod-kv
   tenantId: "d8537334-bc24-4daf-95a8-bf4c9fb14394"
   secretPrefix: PROD-ANALYSIS
+
+rollout:
   autoPromotionEnabled: false
   previewReplicaCount: 1
+
 resources:
   requests:
     cpu: "100m"
@@ -23,13 +30,3 @@ resources:
   limits:
     cpu: "500m"
     memory: "512Mi"
-livenessProbe:
-  path: /healthz
-  initialDelaySeconds: 15
-  periodSeconds: 20
-  failureThreshold: 3
-readinessProbe:
-  path: /ready
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  failureThreshold: 3
